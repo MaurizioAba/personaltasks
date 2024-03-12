@@ -21,7 +21,10 @@ export const GlobalProvider = ({ children }) => {
           const res = await axios.get("/api/tasks");
 
           setTasks (res.data);
-        } catch (error) {}
+          setIsLoading(false)
+        } catch (error) {
+            console.log(error);
+        }
     };
 
     React.useEffect(() => {
@@ -32,6 +35,7 @@ export const GlobalProvider = ({ children }) => {
         <GlobalContext.Provider 
          value = {{
             theme,
+            tasks,
          }}
         >
         <GlobalUpdateContext.Provider value={{}}>

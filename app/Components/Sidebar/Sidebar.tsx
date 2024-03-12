@@ -2,13 +2,17 @@
 import React from "react";
 import styled from "styled-components";
 import {useGlobalState} from "@/app/context/globalProvider";
+import Button from "../Button/Button";
+import { arrowLeft, bars, logout } from "@/app/utils/Icons";
 import Image from "next/image";
 import Link from "next/link";
 import menu from "@/app/utils/menu";
 import { useParams, usePathname, useRouter } from "next/navigation";
+import { useClerk } from "@clerk/nextjs";
 
 function Sidebar() {
     const {theme} = useGlobalState();
+    const {signOut} = useClerk();
 
     const router = useRouter();
     const pathname = usePathname();
@@ -43,7 +47,20 @@ function Sidebar() {
                 );
             })}
         </ul>
-        <button></button>
+       <div className="sign-out relative m-6">
+            <Button 
+              name={"Sign Out"}
+              type={"submit"}
+              padding={"0.4rem 0.8rem"}
+              borderRad={"0.8rem"}
+              fw={"500"}
+              fs={"1.2rem"}
+              icon={logout}
+              click={() => {
+                signOut(() => router.push("/signin"));
+              }}
+            />
+       </div>
     </SidebarStyled>
   
 }
