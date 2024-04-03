@@ -8,11 +8,19 @@ import Image from "next/image";
 import Link from "next/link";
 import menu from "@/app/utils/menu";
 import { useParams, usePathname, useRouter } from "next/navigation";
-import { useClerk } from "@clerk/nextjs";
+import { UserButton, useClerk, useUser } from "@clerk/nextjs";
 
 function Sidebar() {
     const {theme} = useGlobalState();
     const {signOut} = useClerk();
+
+    const {user} = useUser();
+
+    const {firstName, lastName, imageUrl} = user || {
+      firstName: "", 
+      lastName: "",
+      imageUrl: "",
+    };
 
     const router = useRouter();
     const pathname = usePathname();
@@ -21,15 +29,18 @@ function Sidebar() {
         router.push(link);
       };
 
-    return <SidebarStyled theme={theme}>
+    return ( 
+    <SidebarStyled theme={theme}>
         <div className="profile">
             <div className="profile-overlay"></div>
-            <div className="Image">
-                <Image width={70} height={70} src="" alt="profile"/>
+            <div className="image">
+                <Image width={70} height={70} src={imageUrl} alt="profile"/>
             </div>
-            <h1>
-                <span>John</span>
-                <span>Doe</span>
+            <div className="user-btn absolute z-20 top-0 w-full h-full">
+              <UserButton />
+            </div>
+            <h1 className= "capitalize">
+              {firstName} {lastName}
             </h1>
         </div>
         <ul className="nav-items">
@@ -37,10 +48,13 @@ function Sidebar() {
 
                 const link =item.link                
                 return ( 
-                    <li className={`nav-item ${pathname === link ? "active" : ""}`} 
-                    onClick={()=>{
+                    <li 
+                        key={item.id}
+                        className={`nav-item ${pathname === link ? "active" : ""}`} 
+                        onClick={()=>{
                         handleClick(link)
-                    }}>
+                    }}
+                  >
                     {item.icon}
                     <Link href={link}>{item.title}</Link>
                 </li>
@@ -62,7 +76,7 @@ function Sidebar() {
             />
        </div>
     </SidebarStyled>
-  
+    );
 }
 
 const SidebarStyled = styled.nav`
@@ -91,6 +105,19 @@ const SidebarStyled = styled.nav`
 
     display: flex;
     align-items: center;
+
+    .user-btn {
+      .cl-rootBox{
+        width: 100%;
+        height: 100%;
+
+        .cl-userButtonBox{
+          width: 100%;
+          height: 100%;
+          opacity: 0;
+        }
+      }
+    }
 
     .profile-overlay {
       position: absolute;
